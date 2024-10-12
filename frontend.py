@@ -1,14 +1,15 @@
 import customtkinter as ctk
 import tkinter as tk
-from tkinter import ttk
+from tkinter import END, ttk
 from backend import BackEnd
 
 # Classe principal da tela principal
 
 
-class JanelaPrincipal(ctk.CTk):
+class JanelaPrincipal(ctk.CTkToplevel):
     def __init__(self):
         super().__init__()
+
         self.bd = BackEnd()
 
         self.geometry("700x500")
@@ -49,14 +50,24 @@ class JanelaPrincipal(ctk.CTk):
             self.frame_principal, text="Cadastrar", command=self.cadastrar_produtos)
         self.botao_cadastrar_tarefas.place(x=250, y=150)
 
+        self.carregar_dados_tarefas()
+
     def cadastrar_produtos(self):
-        tarefa = self.entry_tarefa.get()
-        data = self.entry_data.get()
+        self.tarefa = self.entry_tarefa.get()
+        self.data = self.entry_data.get()
+        self.bd.inserir_dados_tarefas(self.tarefa, self.data)
+        self.lista_tarefas.insert('', 'end', values=(self.tarefa, self.data))
 
-        self.lista_tarefas.insert('', 'end', values=(tarefa, data))
+    def carregar_dados_tarefas(self):
+        self.registros = self.bd.selecionar_dados()
+        for registro in self.registros:
+            self.tarefa = registro[1]
+            self.data = registro[2]
+            self.lista_tarefas.insert(
+                '', 'end', values=(self.tarefa, self.data))
+
+
 # Classe principal da tela de login
-
-
 class App(ctk.CTk, BackEnd):
     def __init__(self):
         super().__init__()
@@ -164,7 +175,7 @@ class App(ctk.CTk, BackEnd):
 
 
 if __name__ == "__main__":
-    # tela_login = App()
-    # tela_login.mainloop()
-    janela_principal = JanelaPrincipal()
-    janela_principal.mainloop()
+    tela_login = App()
+    tela_login.mainloop()
+    # janela_principal = JanelaPrincipal()
+    # janela_principal.mainloop()

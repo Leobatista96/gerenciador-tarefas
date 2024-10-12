@@ -15,6 +15,7 @@ class BackEnd():
 
     # Função de fechamento da conexão com o BD
     def desconexao_db(self):
+        self.cursor.close()
         self.conexao.close()
         print("Banco desconectado")
 
@@ -82,7 +83,7 @@ class BackEnd():
         self.pegar_informacoes_senhalogin = self.senha_login.get()
         self.conexao_bd()
 
-        self.cursor.execute(f"""SELECT * FROM usuarios WHERE (Usuario = ? AND Senha = ?)""",
+        self.cursor.execute("""SELECT * FROM usuarios WHERE (Usuario = ? AND Senha = ?)""",
                             (self.pegar_informacoeslogin, self.pegar_informacoes_senhalogin))
         self.verificar_dados = self.cursor.fetchone()
 
@@ -101,3 +102,24 @@ class BackEnd():
             self.desconexao_db()
             self.limpar_campos_login()
             self.open_toplevel()
+
+    def inserir_dados_tarefas(self, tarefa, data):
+        try:
+            self.conexao_bd()
+            self.cursor.execute("""INSERT INTO tarefas (Tarefa, Data) VALUES(?,?)""", (
+                tarefa, data))
+            self.conexao.commit()
+            print("Dados inseridos na tabela Tarefas com sucesso")
+        except (Exception, sql3.Error) as error:
+            print("Erro na inserção dos dados na tabela Tarefas", error)
+            self.desconexao_db()
+
+    def selecionar_dados(self):
+        try:
+            self.conexao_bd()
+            self.cursor.execute("""SELECT * FROM tarefas""")
+            self.registros = self.cursor.fetchall()
+        except (Exception, sql3.Error) as error:
+            print("Erro na seleção dos dados na tabela Tarefas", error)
+            self.desconexao_db()
+        return self.registros
