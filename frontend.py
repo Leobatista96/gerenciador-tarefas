@@ -2,14 +2,14 @@ import customtkinter as ctk
 import tkinter as tk
 from tkinter import END, ttk
 from backend import BackEnd
+from tkinter import messagebox
 
-# Classe principal da tela principal
+# Classe principal da tela de cadastro de tarefas
 
 
 class JanelaPrincipal(ctk.CTkToplevel):
     def __init__(self):
         super().__init__()
-
         self.bd = BackEnd()
 
         self.geometry("700x500")
@@ -52,6 +52,8 @@ class JanelaPrincipal(ctk.CTkToplevel):
 
         self.carregar_dados_tarefas()
 
+        self.protocol("WM_DELETE_WINDOW", self.fechar)
+
     def cadastrar_produtos(self):
         self.tarefa = self.entry_tarefa.get()
         self.data = self.entry_data.get()
@@ -66,8 +68,13 @@ class JanelaPrincipal(ctk.CTkToplevel):
             self.lista_tarefas.insert(
                 '', 'end', values=(self.tarefa, self.data))
 
+    def fechar(self):
+        self.destroy()
+
 
 # Classe principal da tela de login
+
+
 class App(ctk.CTk, BackEnd):
     def __init__(self):
         super().__init__()
@@ -172,6 +179,9 @@ class App(ctk.CTk, BackEnd):
     def limpar_campos_login(self):
         self.login_login.delete(0, END)
         self.senha_login.delete(0, END)
+
+    def fechar(self):
+        self.destroy()
 
 
 if __name__ == "__main__":
