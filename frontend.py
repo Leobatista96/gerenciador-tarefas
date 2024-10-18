@@ -1,8 +1,8 @@
 import customtkinter as ctk
 import tkinter as tk
 from tkinter import END, ttk
-from backend import BackEnd
 from tkinter import messagebox
+from backend import BackEnd
 
 # Classe principal da tela de cadastro de tarefas
 
@@ -38,6 +38,12 @@ class JanelaPrincipal(ctk.CTkToplevel):
         self.lista_tarefas = ttk.Treeview(
             self.frame_principal, columns=['ID', 'Tarefa', 'Data'], show='headings', selectmode='browse')
         self.lista_tarefas.place(x=20, y=200)
+
+        self.barra_rolagem = ctk.CTkScrollbar(self.lista_tarefas,
+                                              orientation='vertical', command=self.lista_tarefas.yview, fg_color='white', button_color='black')
+        self.barra_rolagem.place(x=485, y=25)
+
+        self.lista_tarefas.configure(yscrollcommand=self.barra_rolagem.set)
 
         self.lista_tarefas.heading('Tarefa', text='Tarefa')
         self.lista_tarefas.heading('Data', text='Data')
