@@ -109,9 +109,10 @@ class BackEnd():
             self.cursor.execute("""INSERT INTO tarefas (Tarefa, Data) VALUES(?,?)""", (
                 tarefa, data))
             self.conexao.commit()
+            self.desconexao_db()
             print("Dados inseridos na tabela Tarefas com sucesso")
         except (Exception, sql3.Error) as error:
-            print("Erro na inserção dos dados na tabela Tarefas", error)
+            print("Erro na inserção dos dados na tabela Tarefas, ", error)
             self.desconexao_db()
 
     def selecionar_dados(self):
@@ -120,6 +121,18 @@ class BackEnd():
             self.cursor.execute("""SELECT * FROM tarefas""")
             self.registros = self.cursor.fetchall()
         except (Exception, sql3.Error) as error:
-            print("Erro na seleção dos dados na tabela Tarefas", error)
+            print("Erro na seleção dos dados na tabela Tarefas, ", error)
             self.desconexao_db()
         return self.registros
+
+    def excluir_dados(self, id):
+        try:
+            self.conexao_bd()
+            self.cursor.execute(
+                f"""DELETE FROM tarefas WHERE ID = {id}""")
+            self.conexao.commit()
+            self.desconexao_db()
+            print("Registro excluído com sucesso!")
+        except (Exception, sql3.Error) as error:
+            print("Erro na exclusão dos dados, ", error)
+            self.desconexao_db()

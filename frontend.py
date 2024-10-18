@@ -36,70 +36,86 @@ class JanelaPrincipal(ctk.CTkToplevel):
         self.entry_data.place(x=150, y=50)
 
         self.lista_tarefas = ttk.Treeview(
-            self.frame_principal, columns=['Tarefa', 'Data'], show='headings', selectmode='browse')
-        self.lista_tarefas.place(x=50, y=200)
+            self.frame_principal, columns=['ID', 'Tarefa', 'Data'], show='headings', selectmode='browse')
+        self.lista_tarefas.place(x=20, y=200)
 
         self.lista_tarefas.heading('Tarefa', text='Tarefa')
         self.lista_tarefas.heading('Data', text='Data')
+        self.lista_tarefas.heading('ID', text='ID')
 
         self.lista_tarefas.column(
             'Tarefa', minwidth=0, width=350)
         self.lista_tarefas.column('Data', minwidth=0, width=100)
+        self.lista_tarefas.column('ID', minwidth=0, width=50)
 
         self.botao_cadastrar_tarefas = ctk.CTkButton(
-            self.frame_principal, text="Cadastrar", command=self.cadastrar_produtos)
-        self.botao_cadastrar_tarefas.place(x=250, y=150)
+            self.frame_principal, text="Cadastrar Tarefa", command=self.cadastrar_produtos)
+        self.botao_cadastrar_tarefas.place(x=100, y=150)
+
+        self.botao_excluir_tarefas = ctk.CTkButton(
+            self.frame_principal, text="Excluir Tarefa", command=(self.excluir_tarefas), fg_color='#FF0000', hover_color='#B22222')
+        self.botao_excluir_tarefas.place(x=250, y=150)
 
         self.carregar_dados_tarefas()
-
-        self.protocol("WM_DELETE_WINDOW", self.fechar)
 
     def cadastrar_produtos(self):
         self.tarefa = self.entry_tarefa.get()
         self.data = self.entry_data.get()
-        self.bd.inserir_dados_tarefas(self.tarefa, self.data)
-        self.lista_tarefas.insert('', 'end', values=(self.tarefa, self.data))
+
+        if self.tarefa == '' or self.data == '':
+            messagebox.showerror(
+                title='Erro', message='Por favor, preencha todos os campos')
+        else:
+            self.bd.inserir_dados_tarefas(self.tarefa, self.data)
+            self.id = self.bd.selecionar_dados()
+            for registro in self.id:
+                self.iid = registro[0]
+            self.lista_tarefas.insert(
+                '', 'end', values=(self.iid, self.tarefa, self.data))
+            self.limpar_campos()
 
     def carregar_dados_tarefas(self):
-        self.registros = self.bd.selecionar_dados()
-        for registro in self.registros:
+        self.registros_retornados = self.bd.selecionar_dados()
+        for registro in self.registros_retornados:
+            self.id = registro[0]
             self.tarefa = registro[1]
             self.data = registro[2]
             self.lista_tarefas.insert(
-                '', 'end', values=(self.tarefa, self.data))
+                '', 'end', values=(self.id, self.tarefa, self.data))
 
-    def fechar(self):
-        self.destroy()
+    def excluir_tarefas(self):
+        try:
+            self.item_selecionado = self.lista_tarefas.selection()[0]
+            self.valores_item_selecionado = self.lista_tarefas.item(
+                self.item_selecionado, 'values')
+            self.tarefa_selecionada = int(self.valores_item_selecionado[0])
+            self.bd.excluir_dados(self.tarefa_selecionada)
+            self.lista_tarefas.delete(self.item_selecionado)
+        except:
+            messagebox.showinfo(
+                title="Erro", message="Selecione um registro para ser deletado")
+
+    def limpar_campos(self):
+        self.entry_tarefa.delete(0, END)
+        self.entry_data.delete(0, END)
+
+ # Classe principal da tela de login
 
 
-# Classe principal da tela de login
-
-
-class App(ctk.CTk, BackEnd):
+class Login(ctk.CTk, BackEnd):
     def __init__(self):
         super().__init__()
-        self.config_tela_login()
-        self.tela_login()
-        self.criar_tabela()
-        self.toplevel_window = None
 
-    def open_toplevel(self):
-        self.withdraw()
-        if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
-            self.toplevel_window = JanelaPrincipal()
-
-    # Configurações da janela de Login
-
-    def config_tela_login(self):
         self.geometry("400x400")
         self.title("Tela de Login")
         self.resizable(False, False)
         self.tema = ctk.set_appearance_mode("dark")
         self.cor_tema = ctk.set_default_color_theme("dark-blue")
+        self.criar_tabela()
+        self.tela_login()
+        self.toplevel_window = None
 
-    # tela principal de login e cadastro
     def tela_login(self):
-
         # Frame do formulário de login
         self.frame_login = ctk.CTkFrame(self, width=350, height=380)
         self.frame_login.place(x=50, y=40)
@@ -129,7 +145,6 @@ class App(ctk.CTk, BackEnd):
             'Roboto', 16), fg_color="Green", hover_color="#050", command=self.tela_cadastro)
         self.botao_cadastrar.grid(row=7, column=0, padx=10, pady=10)
 
-    # Componentes do frame de cadastro
     def tela_cadastro(self):
         # remover o fomrmulário de login
         self.frame_login.place_forget()
@@ -167,7 +182,13 @@ class App(ctk.CTk, BackEnd):
             self.frame_cadastro, text="Voltar", width=300, font=('Roboto', 16), command=self.tela_login)
         self.botao_voltar_cadastro.grid(row=6, column=0, padx=10, pady=5)
 
+    def open_toplevel(self):
+        self.withdraw()
+        if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
+            self.toplevel_window = JanelaPrincipal()
+
     # Limpeza dos campos do formulário de cadastro
+
     def limpar_campos_cadastro(self):
         self.cadastro_usuario.focus()
         self.cadastro_usuario.delete(0, END)
@@ -180,12 +201,9 @@ class App(ctk.CTk, BackEnd):
         self.login_login.delete(0, END)
         self.senha_login.delete(0, END)
 
-    def fechar(self):
-        self.destroy()
-
 
 if __name__ == "__main__":
-    tela_login = App()
-    tela_login.mainloop()
-    # janela_principal = JanelaPrincipal()
-    # janela_principal.mainloop()
+    # tela_login = Login()
+    # tela_login.mainloop()
+    janela_principal = JanelaPrincipal()
+    janela_principal.mainloop()
