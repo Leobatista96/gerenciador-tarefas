@@ -7,16 +7,18 @@ from backend import BackEnd
 # Classe principal da tela de cadastro de tarefas
 
 
-class JanelaPrincipal(ctk.CTkToplevel):
-    def __init__(self):
-        super().__init__()
+class JanelaPrincipal:
+    def __init__(self, janela_principal):
+        self.janela_principal = janela_principal
+
         self.bd = BackEnd()
 
-        self.geometry("700x500")
-        self.resizable(False, False)
-        self.title("Cadastro de Tarefas")
+        self.janela_principal.geometry("700x500")
+        self.janela_principal.resizable(False, False)
+        self.janela_principal.title("Cadastro de Tarefas")
 
-        self.frame_principal = ctk.CTkFrame(self, width=550, height=500)
+        self.frame_principal = ctk.CTkFrame(
+            self.janela_principal, width=550, height=500)
         self.frame_principal.place(x=150, y=3)
 
         self.label_tarefa = ctk.CTkLabel(
@@ -55,7 +57,7 @@ class JanelaPrincipal(ctk.CTkToplevel):
         self.lista_tarefas.column('ID', minwidth=0, width=50)
 
         self.botao_cadastrar_tarefas = ctk.CTkButton(
-            self.frame_principal, text="Cadastrar Tarefa", command=self.cadastrar_produtos)
+            self.frame_principal, text="Cadastrar Tarefa", command=self.cadastrar_tarefas)
         self.botao_cadastrar_tarefas.place(x=100, y=150)
 
         self.botao_excluir_tarefas = ctk.CTkButton(
@@ -64,7 +66,18 @@ class JanelaPrincipal(ctk.CTkToplevel):
 
         self.carregar_dados_tarefas()
 
-    def cadastrar_produtos(self):
+        self.fechar_janela_principal()
+
+    def fechar_janela_principal(self):
+        self.janela_principal.protocol(
+            "WM_DELETE_WINDOW", self.encerrar_aplicacao)
+
+    def encerrar_aplicacao(self):
+        if messagebox.askokcancel("Sair", "Deseja realmente fechar a aplicação?"):
+            self.janela_principal.quit()
+            self.janela_principal.destroy()
+
+    def cadastrar_tarefas(self):
         self.tarefa = self.entry_tarefa.get()
         self.data = self.entry_data.get()
 
@@ -108,13 +121,14 @@ class JanelaPrincipal(ctk.CTkToplevel):
  # Classe principal da tela de login
 
 
-class Login(ctk.CTk, BackEnd):
-    def __init__(self):
+class Login(BackEnd):
+    def __init__(self, janela_login):
         super().__init__()
 
-        self.geometry("400x400")
-        self.title("Tela de Login")
-        self.resizable(False, False)
+        self.janela_login = janela_login
+        self.janela_login.geometry("400x400")
+        self.janela_login.title("Tela de Login")
+        self.janela_login.resizable(False, False)
         self.tema = ctk.set_appearance_mode("dark")
         self.cor_tema = ctk.set_default_color_theme("dark-blue")
         self.criar_tabela()
@@ -123,7 +137,8 @@ class Login(ctk.CTk, BackEnd):
 
     def tela_login(self):
         # Frame do formulário de login
-        self.frame_login = ctk.CTkFrame(self, width=350, height=380)
+        self.frame_login = ctk.CTkFrame(
+            self.janela_login, width=350, height=380)
         self.frame_login.place(x=50, y=40)
 
         self.lbl_login = ctk.CTkLabel(
@@ -189,9 +204,9 @@ class Login(ctk.CTk, BackEnd):
         self.botao_voltar_cadastro.grid(row=6, column=0, padx=10, pady=5)
 
     def open_toplevel(self):
-        self.withdraw()
-        if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
-            self.toplevel_window = JanelaPrincipal()
+        janela_principal = ctk.CTkToplevel()
+        JanelaPrincipal(janela_principal)
+        self.janela_login.withdraw()
 
     # Limpeza dos campos do formulário de cadastro
 
@@ -209,7 +224,8 @@ class Login(ctk.CTk, BackEnd):
 
 
 if __name__ == "__main__":
-    # tela_login = Login()
-    # tela_login.mainloop()
-    janela_principal = JanelaPrincipal()
-    janela_principal.mainloop()
+    janela_login = ctk.CTk()
+    login = Login(janela_login)
+    janela_login.mainloop()
+    # janela_principal = JanelaPrincipal()
+    # janela_principal.mainloop()
