@@ -1,7 +1,8 @@
 import customtkinter as ctk
-import tkinter as tk
+from time import strftime
 from tkinter import END, ttk
 from tkinter import messagebox
+
 from backend import BackEnd
 
 # Classe principal da tela de cadastro de tarefas
@@ -18,7 +19,7 @@ class JanelaPrincipal:
         self.janela_principal.title("Cadastro de Tarefas")
 
         self.frame_principal = ctk.CTkFrame(
-            self.janela_principal, width=550, height=500)
+            self.janela_principal, width=550, height=450)
         self.frame_principal.place(x=150, y=3)
 
         self.label_tarefa = ctk.CTkLabel(
@@ -36,6 +37,14 @@ class JanelaPrincipal:
         self.entry_data = ctk.CTkEntry(self.frame_principal, width=150, font=(
             'Arial', 16))
         self.entry_data.place(x=150, y=50)
+
+        self.frame_barra_status = ctk.CTkFrame(
+            self.janela_principal, width=700, height=45)
+        self.frame_barra_status.place(x=0, y=455)
+
+        self.label_data_atual = ctk.CTkLabel(
+            self.frame_barra_status)
+        self.label_data_atual.place(x=0, y=5)
 
         self.lista_tarefas = ttk.Treeview(
             self.frame_principal, columns=['ID', 'Tarefa', 'Data'], show='headings', selectmode='browse')
@@ -61,6 +70,18 @@ class JanelaPrincipal:
         self.carregar_dados_tarefas()
 
         self.fechar_janela_principal()
+
+        self.atualizar_horario()
+
+    def atualizar_horario(self):
+
+        self.data_atual = strftime('%d/%m/%Y')
+        self.hora_atual = strftime('%H:%M:%S')
+
+        self.label_data_atual.configure(
+            text=f'Data do Sistema: {self.data_atual}, Hora: {self.hora_atual}')
+
+        self.janela_principal.after(1000, self.atualizar_horario)
 
     def fechar_janela_principal(self):
         self.janela_principal.protocol(
@@ -140,9 +161,9 @@ class Login(BackEnd):
         self.lbl_login.grid(row=0, column=0, pady=10, padx=10)
 
         # Campos com Labels e entrys do formulário de login
-        self.login_login = ctk.CTkEntry(
+        self.entry_login = ctk.CTkEntry(
             self.frame_login, placeholder_text="Digite seu nome de Usuário", width=300, font=('Roboto', 14))
-        self.login_login.grid(row=1, column=0, padx=10, pady=10)
+        self.entry_login.grid(row=1, column=0, padx=10, pady=10)
 
         self.senha_login = ctk.CTkEntry(
             self.frame_login, placeholder_text="Digite sua Senha", width=300, font=('Roboto', 14), show="*")
@@ -214,7 +235,7 @@ class Login(BackEnd):
 
     # limpeza dos campos de login
     def limpar_campos_login(self):
-        self.login_login.delete(0, END)
+        self.entry_login.delete(0, END)
         self.senha_login.delete(0, END)
 
 
