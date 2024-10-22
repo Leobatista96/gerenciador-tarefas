@@ -79,15 +79,15 @@ class BackEnd():
     # Pega informações digitadas pelo usuários e faz verificações com Banco de Dados
     def verificar_login(self):
 
-        self.pegar_informacoeslogin = self.login_login.get()
-        self.pegar_informacoes_senhalogin = self.senha_login.get()
+        self.pegar_informacoes_login = self.entry_login.get()
+        self.pegar_informacoes_senha_login = self.senha_login.get()
         self.conexao_bd()
 
         self.cursor.execute("""SELECT * FROM usuarios WHERE (Usuario = ? AND Senha = ?)""",
-                            (self.pegar_informacoeslogin, self.pegar_informacoes_senhalogin))
+                            (self.pegar_informacoes_login, self.pegar_informacoes_senha_login))
         self.verificar_dados = self.cursor.fetchone()
 
-        if self.pegar_informacoeslogin == "" or self.pegar_informacoes_senhalogin == "":
+        if self.pegar_informacoes_login == "" or self.pegar_informacoes_senha_login == "":
             messagebox.showwarning(
                 title="Sistema de Cadastro", message="Por favor preencha todos os campos")
 
