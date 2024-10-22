@@ -41,12 +41,6 @@ class JanelaPrincipal:
             self.frame_principal, columns=['ID', 'Tarefa', 'Data'], show='headings', selectmode='browse')
         self.lista_tarefas.place(x=20, y=200)
 
-        self.barra_rolagem = ctk.CTkScrollbar(self.lista_tarefas,
-                                              orientation='vertical', command=self.lista_tarefas.yview, fg_color='white', button_color='black')
-        self.barra_rolagem.place(x=485, y=25)
-
-        self.lista_tarefas.configure(yscrollcommand=self.barra_rolagem.set)
-
         self.lista_tarefas.heading('Tarefa', text='Tarefa')
         self.lista_tarefas.heading('Data', text='Data')
         self.lista_tarefas.heading('ID', text='ID')
@@ -171,7 +165,8 @@ class Login(BackEnd):
         self.frame_login.place_forget()
 
         # frame do formulário de cadastro
-        self.frame_cadastro = ctk.CTkFrame(self, width=350, height=380)
+        self.frame_cadastro = ctk.CTkFrame(
+            self.janela_login, width=350, height=380)
         self.frame_cadastro.place(x=50, y=40)
 
         # widgets no formulário de cadastro
